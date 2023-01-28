@@ -4,9 +4,11 @@ const bodyParser = require('body-parser');
 const axios = require('axios');
 const { Client } = require('@googlemaps/google-maps-services-js');
 const res = require('express/lib/response');
+const cors = require('cors');
 
 require('dotenv').config();
 
+app.use(cors());
 app.use(bodyParser.json());
 
 const client = new Client({});
