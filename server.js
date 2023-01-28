@@ -11,8 +11,25 @@ app.use(bodyParser.json());
 
 const client = new Client({});
 
-async function get_place_id(lat, lng) {
-  const { data } = await client
+async function get_place_id_from_address(address) {
+  try {
+    const { data } = await client
+    .geocode({
+      params: {
+        address,
+        key: process.env.GOOGLE_MAPS_API_KEY,
+      },
+      timeout: 1000
+    });
+  return data.results[0].place_id;
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+async function get_place_id_from_latlng(lat, lng) {
+  try {
+    const { data } = await client
     .geocode({
       params: {
         latlng: `${lat},${lng}`,
@@ -21,6 +38,9 @@ async function get_place_id(lat, lng) {
       timeout: 1000
     });
   return data.results[0].place_id;
+  } catch (e) {
+    console.log(e);
+  }
 }
 
 async function get_directions(origin, destination) {
@@ -51,8 +71,8 @@ app.get('/', (req, res) => {
 app.post('/get_route', async (req, res) => {
   const { from, to } = req.body;
 
-  const from_place_id = await get_place_id(from.lat, from.lng);
-  const to_place_id = await get_place_id(to.lat, to.lng);
+  const from_place_id = await get_place_id_from_latlng(from.lat, from.lng);
+  const to_place_id = await get_place_id_from_address(to);
 
   try {
     const end_locations = await get_directions(from_place_id, to_place_id);
