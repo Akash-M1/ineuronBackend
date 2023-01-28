@@ -60,7 +60,9 @@ async function get_directions(origin, destination) {
     if (!data.routes) {
       throw new Error('No Route Found');
     }
-    return data.routes[0].legs[0].steps.map(x => ({ end_location: x.end_location, instruction: x.html_instructions }));
+    const regex=/\<[^>]+\>/g;
+    // const regex="";
+    return data.routes[0].legs[0].steps.map(x => ({ end_location: x.end_location, instruction: x.html_instructions.replace(regex,'')}));
   } catch(e) {
     console.log(e);
   }
